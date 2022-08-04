@@ -1,0 +1,9 @@
+# destination: scp settings
+user=xxx
+host=host
+path=path
+# source: obs project
+project=windows:mingw:win64:snapshots
+package=mingw64-kmymoney5
+repo=openSUSE_Leap_15.3
+multibuild=mingw64-kmymoney5-installer
