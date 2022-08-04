@@ -52,10 +52,10 @@ for i in $confs; do
     rm -rf *
     # set options
     if test -n "$multibuild"; then
-        m="--multibuild-package=$multibuild"
+        package+=":$multibuild"
     fi
     # fetch packages
-    $run osc getbinaries -d $(pwd) $m $project $package $repo x86_64
+    $run osc getbinaries -d $(pwd) $project $package $repo x86_64
     # unpack
     for i in $(find -name '*.rpm'); do
         $run rpm2cpio $i |  cpio -idmv
