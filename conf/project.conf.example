@@ -1,9 +1,8 @@
-# destination: scp settings
+# destination: scp/rsync settings
 user=xxx
 host=host
 path=path
+rsync=0|1
 # source: obs project
-project=windows:mingw:win64:snapshots
-package=mingw64-kmymoney5
+packages="windows:mingw:win64:snapshots/mingw64-kmymoney5 ..."
 repo=openSUSE_Leap_15.3
-multibuild=mingw64-kmymoney5-installer

@@ -6,6 +6,7 @@
 # SPDX-License-Identifier: MIT
 #
 
+
 r=$(realpath $0)
 r=$(dirname $r)
 r=$(dirname $r)
@@ -14,16 +15,20 @@ bn=$(basename $0)
 
 # Make sure the temp directory gets removed on script exit.
 trap "exit 1"           HUP INT PIPE QUIT TERM
-trap 'rm -rf "$TEMPD"'  EXIT
+trap 'if test $clean -eq 1; then rm -rf "$TEMPD"; fi'  EXIT
 
 run=
-clean=0
+clean=1
 
 for arg in "$@"
 do
     case "$arg" in
         --dry-run)
             run=echo
+            shift
+            ;;
+        --noclean)
+            clean=0
             shift
             ;;
     esac
@@ -51,15 +56,23 @@ for i in $confs; do
     # clean dir
     rm -rf *
     # set options
-    if test -n "$multibuild"; then
-        package+=":$multibuild"
-    fi
-    # fetch packages
-    $run osc getbinaries -d $(pwd) $project $package $repo x86_64
-    # unpack
-    for i in $(find -name '*.rpm'); do
-        $run rpm2cpio $i |  cpio -idmv
+    mkdir -p .$path
+    for i in $packages; do
+        project=$(echo $i | sed 's,/.*$,,g')
+        package=$(echo $i | sed 's,^.*/,,g')
+        # fetch packages
+        $run osc getbinaries -d $(pwd) $project $package $repo x86_64
     done
-    # upload packages
-    $run scp *.7z *.exe $user@$host:$path
+    # unpack
+    for i in $(find $(pwd) -name '*.rpm'); do
+        (cd .$path; $run rpm2cpio $i |  cpio -idmv)
+    done
+    # upload
+    if test "$rsync" -eq 1; then
+        # upload packages
+        $run rsync -av --delete-after -e ssh .$path $user@$host:$(dirname $path)
+    else
+        # upload packages
+        $run scp .$path/*.exe .$path/*.7z $user@$host:$path
+    fi
 done
