@@ -69,6 +69,9 @@ for i in $confs; do
         # fetch packages
         $run osc getbinaries -d $(pwd) $project $package $repo x86_64
     done
+    # add footer to readme
+    echo "" >> .$path/README.md
+    echo "You can use [7-Zip](https://www.7-zip.de) to unpack *.7z files." >> .$path/README.md
     # unpack
     for i in $(find $(pwd) -name '*.rpm'); do
         (cd .$path; $run rpm2cpio $i |  cpio -idmv)
