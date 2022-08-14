@@ -57,9 +57,12 @@ for i in $confs; do
     rm -rf *
     # set options
     mkdir -p .$path
+    echo "Packages in this directory are generated from the following OBS projects:" >.$path/README.md
     for i in $packages; do
         project=$(echo $i | sed 's,/.*$,,g')
         package=$(echo $i | sed 's,^.*/,,g')
+        # add obs package link to readme
+        echo "- [$project/$package](https://build.opensuse.org/package/show/$project/$package) >>.$path/README.md
         # fetch packages
         $run osc getbinaries -d $(pwd) $project $package $repo x86_64
     done
