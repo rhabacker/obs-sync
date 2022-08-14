@@ -57,7 +57,10 @@ for i in $confs; do
     rm -rf *
     # set options
     mkdir -p .$path
+    # create readme
     echo "Packages in this directory are generated from the following OBS projects:" >.$path/README.md
+    echo "" >> .$path/README.md
+    # loop over all packages
     for i in $packages; do
         project=$(echo $i | sed 's,/.*$,,g')
         package=$(echo $i | sed 's,^.*/,,g')
