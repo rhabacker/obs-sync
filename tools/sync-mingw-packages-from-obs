@@ -67,7 +67,10 @@ for i in $confs; do
         # add obs package link to readme
         echo "- [$project/$package](https://build.opensuse.org/package/show/$project/$package)" >>.$path/README.md
         # fetch packages
-        $run osc getbinaries --quiet -d $(pwd) $project $package $repo x86_64
+        $run osc --quiet getbinaries -d $(pwd) $project $package $repo x86_64
+        if test $? -ne 0; then
+            exit 1
+        fi
     done
     # add footer to readme
     echo "" >> .$path/README.md
