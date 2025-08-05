@@ -5,4 +5,4 @@ path=/home/frs/project/kde-windows/dbus/1.12.20
 rsync=1
 # source: obs project
 packages="windows:mingw:win32/mingw32-dbus-1:mingw32-dbus-1-installer windows:mingw:win64/mingw64-dbus-1:mingw64-dbus-1-installer"
-repo=openSUSE_Leap_15.4
+repo=openSUSE_Leap_15.6

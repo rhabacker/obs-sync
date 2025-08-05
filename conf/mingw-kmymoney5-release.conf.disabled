@@ -5,4 +5,4 @@ path=/home/frs/project/kde-windows/kmymoney/5.1.3
 rsync=1
 # source: obs project
 packages="windows:mingw:win32/mingw32-kmymoney5:mingw32-kmymoney5-installer windows:mingw:win64/mingw64-kmymoney5:mingw64-kmymoney5-installer"
-repo=openSUSE_Leap_15.4
+repo=openSUSE_Leap_15.6
