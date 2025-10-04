@@ -1,7 +1,7 @@
 # destination: scp settings
 user=habacker
 host=frs.sourceforge.net
-path=/home/frs/project/kde-windows/umbrello/2.32.0
+path=/home/frs/project/kde-windows/umbrello/@VERSION@
 rsync=1
 # source: obs project
 packages="windows:mingw:win32/mingw32-umbrello:mingw32-umbrello-installer windows:mingw:win64/mingw64-umbrello:mingw64-umbrello-installer"
