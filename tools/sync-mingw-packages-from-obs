@@ -6,6 +6,20 @@
 # SPDX-License-Identifier: MIT
 #
 
+get_obs_version() {
+    local project="$1"
+    local package="$2"
+    local repo="$3"
+    local arch="$4"
+    local target="$5"
+
+    osc api "/build/$project/$repo/$arch/$package:$target" \
+        | grep -o "${target}-[0-9][^\"']*\.src\.rpm" \
+        | sed -E "s/^${target}-([0-9][^-]*)-.*/\1/" \
+        | sort -u
+}
+
+arch="x86_64"
 
 r=$(realpath $0)
 r=$(dirname $r)
@@ -57,34 +71,38 @@ fi
 cd $TEMPD
 
 for i in $confs; do
+    # get config
     . $i
     # clean dir
     rm -rf *
-    # set options
-    mkdir -p .$path
-    # create readme
-    echo "Packages in this directory are generated from the following OBS projects:" >.$path/README.md
-    echo "" >> .$path/README.md
     # loop over all packages
-    for i in $packages; do
-        project=$(echo $i | sed 's,/.*$,,g')
-        package=$(echo $i | sed 's,^.*/,,g')
+    for full_package in $packages; do
+        project="${full_package%%/*}"
+        package_with_target="${full_package#*/}"
+        package="${package_with_target%%:*}"
+        target="${package_with_target##*:}"
+        version=$(get_obs_version "$project" "$package" "$repo" "$arch" "$target")
+        package_path=${path//@VERSION@/$version}
+        mkdir -p .$package_path
+        # create readme
+        echo "Packages in this directory are generated from the following OBS projects:" > .$package_path/README.md
+        echo "" >> .$package_path/README.md
         # add obs package link to readme
-        echo "- [$project/$package](https://build.opensuse.org/package/show/$project/$package)" >>.$path/README.md
+        echo "- [$project/$package](https://build.opensuse.org/package/show/$project/$package)" >>.$package_path/README.md
         # fetch packages
-        $run osc --quiet getbinaries -d $(pwd) $project $package $repo x86_64
+        $run osc --quiet getbinaries -d $(pwd) $project $package_with_target $repo $arch
         if test $? -ne 0; then
             exit 1
         fi
     done
     # add footer to readme
-    echo "" >> .$path/README.md
-    echo "You can use [7-Zip](https://www.7-zip.de) to unpack *.7z files." >> .$path/README.md
-    echo "" >> .$path/README.md
-    echo "The minimum supported operating system version for these binary packages is Windows 8 (Vista). They are known not to work on Windows 7." >> .$path/README.md
+    echo "" >> .$package_path/README.md
+    echo "You can use [7-Zip](https://www.7-zip.de) to unpack *.7z files." >> .$package_path/README.md
+    echo "" >> .$package_path/README.md
+    echo "The minimum supported operating system version for these binary packages is Windows 8 (Vista). They are known not to work on Windows 7." >> .$package_path/README.md
     # unpack
     for i in $(find $(pwd) -name '*.rpm'); do
-        (cd .$path; $run rpm2cpio $i |  cpio -idmv)
+        (cd .$package_path; $run rpm2cpio $i |  cpio -idmv)
     done
     # upload
     if test "$rsync" -eq 1; then
