@@ -18,6 +18,7 @@ trap "exit 1"           HUP INT PIPE QUIT TERM
 trap 'if test $clean -eq 1; then rm -rf "$TEMPD"; fi'  EXIT
 
 run=
+pushrun=
 clean=1
 
 for arg in "$@"
@@ -29,6 +30,10 @@ do
             ;;
         --noclean)
             clean=0
+            shift
+            ;;
+        --no-push)
+            pushrun=echo
             shift
             ;;
     esac
@@ -84,9 +89,9 @@ for i in $confs; do
     # upload
     if test "$rsync" -eq 1; then
         # upload packages
-        $run rsync -av --delete-after -e ssh .$path $user@$host:$(dirname $path)
+        $pushrun rsync -av --delete-after -e ssh .$package_path $user@$host:$(dirname $package_path)
     else
         # upload packages
-        $run scp .$path/*.exe .$path/*.7z $user@$host:$path
+        $pushrun scp .$package_path/*.exe .$package_path/*.7z $user@$host:$package_path
     fi
 done
