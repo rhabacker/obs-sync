@@ -28,7 +28,7 @@ do
             run=echo
             shift
             ;;
-        --noclean)
+        --no-clean)
             clean=0
             shift
             ;;
